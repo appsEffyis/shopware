@@ -1,0 +1,67 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_main %}
+<style>
+    .lodin-wrap {
+        min-height: 72vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+        background: #f7f8fa;
+    }
+    .lodin-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 20px 40px rgba(0,0,0,.07);
+        max-width: 440px;
+        width: 100%;
+        overflow: hidden;
+        text-align: center;
+        animation: rise .5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes rise {
+        from { opacity:0; transform:translateY(24px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    .lodin-strip { height: 4px; background: linear-gradient(90deg, #ef4444, #f97316); }
+    .lodin-body { padding: 48px 40px 52px; }
+    .lodin-icon {
+        width: 68px; height: 68px; border-radius: 50%;
+        background: #fee2e2;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 24px;
+        animation: shake .5s ease-out .2s both;
+    }
+    @keyframes shake {
+        0%,100% { transform:translateX(0); }
+        25%     { transform:translateX(-6px); }
+        75%     { transform:translateX(6px); }
+    }
+    .lodin-icon svg {
+        stroke-dasharray: 40; stroke-dashoffset: 40;
+        animation: draw .4s ease-out .15s forwards;
+    }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    .lodin-card h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0 0 10px; }
+    .lodin-card p  { font-size: .95rem; color: #64748b; margin: 0; line-height: 1.6; }
+</style>
+
+<div class="lodin-wrap">
+    <div class="lodin-card">
+        <div class="lodin-strip"></div>
+        <div class="lodin-body">
+            <div class="lodin-icon">
+                <svg width="30" height="30" viewBox="0 0 30 30" fill="none"
+                     stroke="#ef4444" stroke-width="2.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="8" x2="22" y2="22"/>
+                    <line x1="22" y1="8" x2="8"  y2="22"/>
+                </svg>
+            </div>
+            <h1>Payment Failed</h1>
+            <p>We couldn't process your payment.<br>No charge has been made to your account.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

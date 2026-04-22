@@ -1,0 +1,18 @@
+<mt-button
+    v-if="show"
+    class="sw-in-app-purchase-checkout-button"
+    variant="primary"
+    size="small"
+    :disabled="disabled"
+    @click="onClick"
+>
+    <div class="sw-in-app-purchase-checkout-button__content">
+        {{ text }}
+
+        <mt-icon
+            v-if="state === 'purchase'"
+            name="regular-long-arrow-right"
+            size="16px"
+        />
+    </div>
+</mt-button>

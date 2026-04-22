@@ -1,0 +1,60 @@
+.sw-in-app-purchase-checkout-purchase {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    color: var(--color-text-primary-default);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xs);
+
+    .sw-gtc-checkbox {
+        .mt-field__label {
+            color: var(--color-text-primary-default);
+        }
+
+        .mt-field--checkbox {
+            margin-bottom: 0;
+        }
+    }
+
+    &__feature {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        &__name {
+            color: var(--color-black);
+            font-weight: var(--font-weight-semi-bold);
+            font-size: var(--font-size-m);
+        }
+
+        &__description {
+            font-size: var(--font-size-s);
+            color: var(--color-text-secondary-default);
+        }
+
+        &__choices {
+            margin-bottom:0;
+
+            .sw-field__radio-group{
+                .sw-field__radio-option {
+                    padding:var(--scale-size-24);
+
+                    .sw-field__radio-input {
+                        margin-top:var(--scale-size-4);
+                    }
+
+                    .sw-field__radio-option-label {
+                        font-size: var(--font-size-m);
+                        color: var(--color-text-primary-default);
+                    }
+                }
+            }
+        }
+    }
+
+    &__subtext {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+}

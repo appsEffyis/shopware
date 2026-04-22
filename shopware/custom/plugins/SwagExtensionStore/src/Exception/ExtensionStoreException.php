@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+namespace SwagExtensionStore\Exception;
+
+use GuzzleHttp\Exception\ClientException;
+use Shopware\Core\Framework\HttpException;
+use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Store\Exception\InvalidExtensionIdException;
+use Shopware\Core\Framework\Store\Exception\InvalidVariantIdException;
+use Symfony\Component\HttpFoundation\Response;
+
+#[Package('checkout')]
+class ExtensionStoreException extends HttpException
+{
+    public static function createStoreApiExceptionFromClientError(ClientException $clientException): ExtensionStoreApiException
+    {
+        return new ExtensionStoreApiException($clientException);
+    }
+
+    public static function invalidExtensionId(): InvalidExtensionIdException
+    {
+        return new InvalidExtensionIdException();
+    }
+
+    public static function invalidVariantId(): InvalidVariantIdException
+    {
+        return new InvalidVariantIdException();
+    }
+
+    public static function invalidExtensionCart(string $errorMessage): self
+    {
+        return new self(
+            Response::HTTP_BAD_REQUEST,
+            'FRAMEWORK__INVALID_EXTENSION_CART',
+            'The cart data is invalid: {{ errorMessage }}',
+            ['errorMessage' => $errorMessage],
+        );
+    }
+
+    public static function invalidInAppPurchase(): self
+    {
+        return new self(
+            Response::HTTP_BAD_REQUEST,
+            'FRAMEWORK__INVALID_IN_APP_PURCHASE',
+            'The extension provider disallowed your purchase. Please contact the extension provider.',
+        );
+    }
+
+    public static function unknownExtension(string $technicalName): self
+    {
+        return new self(
+            Response::HTTP_NOT_FOUND,
+            'FRAMEWORK__UNKNOWN_EXTENSION',
+            'The extension with technical name "{{ technicalName }}" is not known.',
+            ['technicalName' => $technicalName],
+        );
+    }
+}

@@ -1,0 +1,69 @@
+{
+  "sw-in-app-purchase-checkout": {
+    "modalTitle": "In-App Kauf"
+  },
+  "sw-in-app-purchase-checkout-button": {
+    "purchaseButton": "Zahlung abschließen",
+    "closeButton": "Schließen",
+    "tryAgainButton": "Erneut versuchen"
+  },
+  "sw-in-app-purchase-checkout-overview": {
+    "billHint": "Die Kosten werden auf deiner Shopware-Rechnung ausgewiesen. Kündigung jederzeit in deinem Shopware Account.",
+    "excludeVat": "* Alle Preise exklusive Mehrwertsteuer",
+    "partner": {
+      "accept": "Ich akzeptiere die",
+      "gtc": "AGB von {partner}",
+      "conditions": "Servicebedingungen von {partner}",
+      "conditions-header": "Servicebedingungen"
+    }
+  },
+  "sw-in-app-purchase-checkout-state": {
+    "errorTitle": "Etwas ist schiefgelaufen.",
+    "errorSubtitle": "Bitte versuche es erneut oder kontaktiere den Hersteller.",
+    "successTitle": "In-App Kauf war erfolgreich!",
+    "successSubtitle": "Du kannst jetzt dein neues Feature erleben.",
+    "errors": {
+        "ShopwarePlatformException-87": "Ungültiges In-App-Feature",
+        "ShopwarePlatformException-88": "In-App-Feature nicht gefunden",
+        "ShopwarePlatformException-89": "In-App-Feature bereits gekauft",
+        "ShopwarePlatformException-90": "In-App-Feature nicht kaufbar",
+        "ShopwarePlatformException-91": "Änderung des In-App-Feature-Abos nicht erlaubt",
+        "ShopwarePlatformException-92": "In-App-Feature bereits zur Herabstufung vorgemerkt",
+        "ShopwarePlatformException-93": "Ungültige Bestellung",
+        "ShopwarePlatformException-94": "Unzureichendes Guthaben",
+        "ShopwarePlatformException-95": "AGB nicht akzeptiert",
+        "ShopwarePlatformException-96": "In-App-Lizenz nicht gefunden",
+        "CloudAdminException-42": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-87",
+        "CloudAdminException-43": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-88",
+        "CloudAdminException-44": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-89",
+        "CloudAdminException-45": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-90",
+        "CloudAdminException-46": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-93",
+        "CloudAdminException-49": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-91",
+        "CloudAdminException-47": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-94",
+        "CloudAdminException-48": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-95",
+        "CloudAdminException-50": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-96",
+        "CloudAdminException-51": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-92"
+    }
+  },
+  "sw-in-app-purchase-price-box": {
+    "duration": {
+      "monthly": "Monat",
+      "yearly": "Jahr"
+    }
+  },
+  "sw-in-app-purchase-checkout-subscription-change": {
+    "current-plan": "Aktueller Plan",
+    "new-plan": "Neuer Plan",
+    "starting": "Beginn",
+    "due-today": "Heute fällig",
+    "upgrade-hint": "Basierend auf dem heutigen Datum {today} beträgt deine anteilige Upgrade-Gebühr {price}. Du erhältst sofort Zugriff auf deinen neuen Plan. Deine reguläre {variant} Gebühr von {fee} beginnt am {start}.",
+    "downgrade-hint": "Ab dem {start} beträgt die reguläre {variant} Gebühr {fee}. Bis dahin hast du weiterhin Zugriff auf deinen aktuellen Plan.",
+    "attention": "Bitte beachte:",
+    "access-grant-hint": "du wirst dauerhaft den kostenlosen Zugriff auf deinen aktuellen Plan \"{plan}\" verlieren.",
+    "free": "kostenlos",
+    "variant": {
+      "monthly": "monatliche",
+      "yearly": "jährliche"
+    }
+  }
+}

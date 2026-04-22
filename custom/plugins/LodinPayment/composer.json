@@ -1,0 +1,17 @@
+{
+    "name": "custom/lodin-payment",
+    "description": "Lodin Payment integration",
+    "type": "shopware-platform-plugin",
+    "license": "proprietary",
+    "autoload": {
+        "psr-4": {
+            "LodinPayment\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "LodinPayment\\LodinPayment",
+        "label": {
+            "en-GB": "Lodin Payment"
+        }
+    }
+}

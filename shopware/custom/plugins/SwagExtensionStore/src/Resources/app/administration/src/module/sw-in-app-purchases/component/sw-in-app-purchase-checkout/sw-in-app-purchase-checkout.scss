@@ -1,0 +1,28 @@
+.sw-in-app-purchase-checkout {
+    z-index: 1050;
+
+    .sw-modal {
+        &__footer {
+            grid-template-columns: 1fr;
+        }
+
+        &__titles {
+            display: flex;
+            gap: 12px;
+        }
+
+        &__title {
+            line-height: var(--line-height-lg);
+        }
+    }
+
+    &__content {
+        display: flex;
+        justify-content: center;
+    }
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+    }
+}

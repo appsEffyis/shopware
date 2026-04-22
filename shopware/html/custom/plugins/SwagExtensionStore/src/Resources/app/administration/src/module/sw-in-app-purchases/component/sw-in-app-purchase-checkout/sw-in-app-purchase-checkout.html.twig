@@ -1,0 +1,52 @@
+{% block sw_in_app_purchase_checkout_modal %}
+<sw-modal
+    v-if="store.entry"
+    class="sw-in-app-purchase-checkout"
+    :title="$t('sw-in-app-purchase-checkout.modalTitle')"
+    @modal-close="handleStateActions(false)"
+>
+    <template v-if="state === 'purchase'" #modal-title>
+        <sw-extension-icon
+            class="sw-in-app-purchase-checkout__icon"
+            :src="extensionIcon"
+        />
+
+        <div class="sw-in-app-purchase-checkout__titles">
+            <h4 id="modalTitleEl" class="sw-modal__title">
+                {{ $t('sw-in-app-purchase-checkout.modalTitle') }}
+            </h4>
+
+            <h5 class="sw-modal__subtitle">
+                {{ extension.label }}
+            </h5>
+        </div>
+    </template>
+
+    <sw-in-app-purchase-checkout-overview
+        v-if="state === 'purchase'"
+        v-model:tos-accepted="tosAccepted"
+        v-model:gtc-accepted="gtcAccepted"
+        v-model:variant="variant"
+        :purchase="purchase"
+        :producer="extension.producerName"
+        :cart="inAppPurchaseCart"
+        @update:variant="createCart"
+    />
+
+    <sw-in-app-purchase-checkout-state
+        v-if="['loading', 'success', 'error'].includes(state)"
+        :state="state"
+        :error="errorMessage"
+    />
+
+    <template #modal-footer>
+        <sw-in-app-purchase-checkout-button
+            :state="state"
+            :tos-accepted="tosAccepted"
+            :gtc-accepted="gtcAccepted"
+            :variant="variant"
+            @click="handleStateActions(true)"
+        />
+    </template>
+</sw-modal>
+{% endblock %}

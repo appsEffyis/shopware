@@ -1,0 +1,69 @@
+{
+  "sw-in-app-purchase-checkout": {
+    "modalTitle": "In-App Purchase"
+  },
+  "sw-in-app-purchase-checkout-button": {
+    "purchaseButton": "Complete payment",
+    "closeButton": "Close",
+    "tryAgainButton": "Try again"
+  },
+  "sw-in-app-purchase-checkout-overview": {
+    "billHint": "Costs will be added to your Shopware bill. Cancellation at any time in your Shopware Account.",
+    "excludeVat": "* All prices are exclusive of VAT",
+    "partner": {
+      "accept": "I accept",
+      "gtc": "{partner}'s terms and conditions",
+      "conditions": "{partner}'s service conditions",
+      "conditions-header": "Service conditions"
+    }
+  },
+  "sw-in-app-purchase-checkout-state": {
+    "errorTitle": "Something went wrong.",
+    "errorSubtitle": "Please try again or contact the manufacturer.",
+    "successTitle": "In-App Purchase was successful!",
+    "successSubtitle": "You can now experience your new feature.",
+    "errors": {
+      "ShopwarePlatformException-87": "Invalid in-app feature",
+      "ShopwarePlatformException-88": "In-app feature not found",
+      "ShopwarePlatformException-89": "In-app feature already purchased",
+      "ShopwarePlatformException-90": "In-app feature not purchasable",
+      "ShopwarePlatformException-91": "In-app feature subscription change not allowed",
+      "ShopwarePlatformException-92": "In-app feature already pending downgrade",
+      "ShopwarePlatformException-93": "Invalid order",
+      "ShopwarePlatformException-94": "Insufficient balance",
+      "ShopwarePlatformException-95": "GTC not accepted",
+      "ShopwarePlatformException-96": "In-app license not found",
+      "CloudAdminException-42": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-87",
+      "CloudAdminException-43": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-88",
+      "CloudAdminException-44": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-89",
+      "CloudAdminException-45": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-90",
+      "CloudAdminException-46": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-93",
+      "CloudAdminException-49": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-91",
+      "CloudAdminException-47": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-94",
+      "CloudAdminException-48": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-95",
+      "CloudAdminException-50": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-96",
+      "CloudAdminException-51": "@:sw-in-app-purchase-checkout-state.errors.ShopwarePlatformException-92"
+    }
+  },
+  "sw-in-app-purchase-price-box": {
+    "duration": {
+      "monthly": "month",
+      "yearly": "year"
+    }
+  },
+  "sw-in-app-purchase-checkout-subscription-change": {
+    "current-plan": "Current plan",
+    "new-plan": "New plan",
+    "starting": "Starting",
+    "due-today": "Due today",
+    "upgrade-hint": "Based on today’s date {today}, your prorated upgrade charge is {price}. You will immediately have access to your new plan. Your regular {variant} charge of {fee} will start on {start}.",
+    "downgrade-hint": "Your regular {variant} charge of {fee} will start on {start}. Until then you will still have access to your current plan.",
+    "attention": "Please note:",
+    "access-grant-hint": "you'll permanently lose free access to your current plan '{plan}'.",
+    "free": "free",
+    "variant": {
+      "monthly": "monthly",
+      "yearly": "yearly"
+    }
+  }
+}
