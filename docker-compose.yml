@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  shopware:
+    image: dockware/dev:latest
+    container_name: shopware
+    ports:
+      - "8000:80"
+      - "22:22"
+    environment:
+      XDEBUG_ENABLED: 1
+      LODIN_CLIENT_ID: "lp_shopware_318bccb7-9e84-4327-93d9-c59a64cc3154"
+      LODIN_CLIENT_SECRET: "68NXPvOG9Qn5sq8GAITJhkcSh2frZtsxDokECO_has4"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    stdin_open: true
+    tty: true
+
+  mysql:
+    image: mysql:8
+    container_name: shopware-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shopware
+      MYSQL_USER: shopware
+      MYSQL_PASSWORD: shopware
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
