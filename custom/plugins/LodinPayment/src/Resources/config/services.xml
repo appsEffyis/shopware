@@ -10,11 +10,10 @@
         <service id="LodinPayment\Core\Checkout\Payment\LodinPaymentHandler">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="logger"/>
             <tag name="shopware.payment.method"/>
         </service>
-
         <service id="LodinPayment\Controller\LodinReturnController" public="true">
+            <argument type="service" id="order_transaction.repository"/>
             <tag name="controller.service_arguments"/>
         </service>
 

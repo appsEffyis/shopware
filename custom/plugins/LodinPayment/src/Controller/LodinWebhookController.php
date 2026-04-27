@@ -140,6 +140,37 @@ class LodinWebhookController extends AbstractController
             $transaction = $this->findOrderTransaction($invoiceId, $transactionId, $cardId, $context);
 
             if ($transaction === null) {
+                return new JsonResponse(['ok' => false, 'message' => 'transaction not found'], 404);
+            }
+
+            $order = $transaction->getOrder();
+
+            if ($order === null) {
+                return new JsonResponse(['ok' => false, 'message' => 'order not found'], 404);
+            }
+
+            $shopwareAmount = (float) $transaction->getAmount()->getTotalPrice();
+
+            $lodinAmount = (float) (
+                $payload['amount']
+                ?? $data['amount']
+                ?? 0
+            );
+
+            if (round($shopwareAmount, 2) !== round($lodinAmount, 2)) {
+
+                $this->logger->error('Amount mismatch', [
+                    'shopware' => $shopwareAmount,
+                    'lodin' => $lodinAmount,
+                ]);
+
+                return new JsonResponse([
+                    'ok' => false,
+                    'message' => 'amount mismatch'
+                ], 400);
+            }
+
+            if ($transaction === null) {
                 $this->logger->warning('Lodin Webhook: order transaction not found', [
                     'invoiceId' => $invoiceId,
                     'transactionId' => $transactionId,
@@ -267,7 +298,7 @@ class LodinWebhookController extends AbstractController
         }
 
         if (in_array($status, ['processing', 'in_progress'], true)) {
-            return StateMachineTransitionActions::ACTION_DO_PAY;
+            return 'process';
         }
 
         return null;

@@ -2,7 +2,6 @@
 
 namespace LodinPayment\Core\Checkout\Payment;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AbstractPaymentHandler;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerType;
@@ -18,11 +17,11 @@ use Symfony\Component\HttpFoundation\Request;
 class LodinPaymentHandler extends AbstractPaymentHandler
 {
     private const API_URL = 'https://api-preprod.lodinpay.com/merchant-service/extensions/pay/rtp';
+    private const SHOP_BASE_URL = 'http://localhost:8000';
 
     public function __construct(
         private readonly SystemConfigService $systemConfigService,
-        private readonly EntityRepository $orderTransactionRepository,
-        private readonly LoggerInterface $logger,
+        private readonly EntityRepository $orderTransactionRepository
     ) {
     }
 
@@ -32,139 +31,156 @@ class LodinPaymentHandler extends AbstractPaymentHandler
         Context $context,
         ?Struct $validateStruct = null
     ): ?RedirectResponse {
-        $salesChannelId = method_exists($context->getSource(), 'getSalesChannelId')
-            ? $context->getSource()->getSalesChannelId()
-            : null;
+        try {
+            file_put_contents('/var/www/html/debug.txt', "STEP 1: PAY CALLED\n", FILE_APPEND);
 
-        $clientId = (string) $this->systemConfigService->get('LodinPayment.config.clientId', $salesChannelId);
-        $clientSecret = (string) $this->systemConfigService->get('LodinPayment.config.clientSecret', $salesChannelId);
+            $salesChannelId = null;
+            $source = $context->getSource();
 
-        if ($clientId === '' || $clientSecret === '') {
-            throw new \RuntimeException('Lodin payment configuration is incomplete.');
-        }
+            if (method_exists($source, 'getSalesChannelId')) {
+                $salesChannelId = $source->getSalesChannelId();
+            }
 
-        $orderTransactionId = $transaction->getOrderTransactionId();
+            $clientId = (string) (
+                $this->systemConfigService->get('LodinPayment.config.clientId', $salesChannelId)
+                ?: getenv('LODIN_CLIENT_ID')
+                ?: 'TEST_CLIENT_ID'
+            );
 
-        $criteria = new Criteria([$orderTransactionId]);
-        $criteria->addAssociation('order');
+            $clientSecret = (string) (
+                $this->systemConfigService->get('LodinPayment.config.clientSecret', $salesChannelId)
+                ?: getenv('LODIN_CLIENT_SECRET')
+                ?: 'TEST_SECRET'
+            );
 
-        $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+            file_put_contents('/var/www/html/debug.txt', "STEP 2: CONFIG OK | CLIENT_ID={$clientId}\n", FILE_APPEND);
 
-        if (!$orderTransaction instanceof OrderTransactionEntity) {
-            throw new \RuntimeException('Order transaction not found.');
-        }
+            $orderTransactionId = $transaction->getOrderTransactionId();
 
-        $order = $orderTransaction->getOrder();
+            $criteria = new Criteria([$orderTransactionId]);
+            $criteria->addAssociation('order');
 
-        if ($order === null) {
-            throw new \RuntimeException('Order not found.');
-        }
+            $orderTransaction = $this->orderTransactionRepository->search($criteria, $context)->first();
 
-        $amount = number_format((float) $orderTransaction->getAmount()->getTotalPrice(), 2, '.', '');
-        $invoiceId = sprintf('ORDER-%s-%s', $order->getOrderNumber(), substr($orderTransactionId, 0, 8));
+            if (!$orderTransaction instanceof OrderTransactionEntity) {
+                throw new \RuntimeException('Order transaction not found');
+            }
 
-        $returnUrl = $transaction->getReturnUrl();
-        $customFields = $orderTransaction->getCustomFields() ?? [];
-        $customFields['lodinInvoiceId'] = $invoiceId;
+            $order = $orderTransaction->getOrder();
 
-        $this->orderTransactionRepository->update([
-            [
-                'id' => $orderTransactionId,
-                'customFields' => $customFields,
-            ],
-        ], $context);
+            if ($order === null) {
+                throw new \RuntimeException('Order not found');
+            }
 
-        $timestamp = gmdate('Y-m-d\TH:i:s\Z');
-        $payload = $clientId . $timestamp . $amount . $invoiceId;
-        $signature = $this->generateSignature($payload, $clientSecret);
+            $amount = number_format((float) $orderTransaction->getAmount()->getTotalPrice(), 2, '.', '');
 
-        $body = [
-            'amount' => (float) $amount,
-            'invoiceId' => $invoiceId,
-            'paymentType' => 'INST',
-            'cardId' => $invoiceId,
-            'description' => 'Shopware Order #' . $order->getOrderNumber(),
-            'returnUrl' => $returnUrl,
-        ];
+            $invoiceId = sprintf(
+                'ORDER-%s-%s',
+                $order->getOrderNumber(),
+                time()
+            );
 
-        $headers = [
-            'Content-Type: application/json',
-            'X-Client-Id: ' . $clientId,
-            'X-Timestamp: ' . $timestamp,
-            'X-Signature: ' . $signature,
-            'X-Extension-Code: SHOPWARE',
-        ];
+            $shopBaseUrl = rtrim((string) (
+            $this->systemConfigService->get('LodinPayment.config.shopBaseUrl', $salesChannelId)
+            ?: self::SHOP_BASE_URL
+        ), '/');
 
-        $ch = curl_init(self::API_URL);
+        $returnUrl = $shopBaseUrl . '/lodin/return'
+            . '?orderId=' . urlencode($order->getId())
+            . '&transactionId=' . urlencode($orderTransactionId);
 
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($body, JSON_UNESCAPED_SLASHES),
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_TIMEOUT => 20,
-        ]);
+            $customFields = $orderTransaction->getCustomFields() ?? [];
+            $customFields['lodinInvoiceId'] = $invoiceId;
 
-        $rawResponse = curl_exec($ch);
-        $curlError = curl_error($ch);
-        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $this->orderTransactionRepository->update([
+                [
+                    'id' => $orderTransactionId,
+                    'customFields' => $customFields,
+                ],
+            ], $context);
 
-        if ($rawResponse === false) {
+            $timestamp = gmdate('Y-m-d\TH:i:s\Z');
+
+            $payload = $clientId . $timestamp . $amount . $invoiceId;
+            $signature = $this->generateSignature($payload, $clientSecret);
+
+            $body = [
+                'amount' => (float) $amount,
+                'invoiceId' => $invoiceId,
+                'paymentType' => 'INST',
+                'cardId' => $invoiceId,
+                'description' => 'Shopware Order #' . $order->getOrderNumber(),
+                'returnUrl' => $returnUrl,
+            ];
+
+            $headers = [
+                'Content-Type: application/json',
+                'X-Client-Id: ' . $clientId,
+                'X-Timestamp: ' . $timestamp,
+                'X-Signature: ' . $signature,
+                'X-Extension-Code: SHOPWARE',
+            ];
+
+            file_put_contents('/var/www/html/debug.txt', "STEP 3: REQUEST BODY = " . json_encode($body) . "\n", FILE_APPEND);
+
+            $ch = curl_init(self::API_URL);
+
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($body),
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_TIMEOUT => 20,
+            ]);
+
+            $response = curl_exec($ch);
+            $curlError = curl_error($ch);
+            $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($response === false) {
+                curl_close($ch);
+                throw new \RuntimeException('Curl error: ' . $curlError);
+            }
+
             curl_close($ch);
 
-            $this->logger->error('Lodin create payment curl error', [
-                'transactionId' => $orderTransactionId,
-                'error' => $curlError,
-            ]);
+            file_put_contents('/var/www/html/debug.txt', "STEP 4: HTTP CODE = {$httpCode}\n", FILE_APPEND);
+            file_put_contents('/var/www/html/debug.txt', "STEP 5: RESPONSE = {$response}\n", FILE_APPEND);
 
-            throw new \RuntimeException('Curl error: ' . $curlError);
+            $data = json_decode($response, true);
+
+            if (!is_array($data)) {
+                throw new \RuntimeException('Invalid API response: ' . $response);
+            }
+
+            $paymentUrl =
+                $data['url']
+                ?? $data['paymentUrl']
+                ?? $data['data']['url']
+                ?? $data['data']['paymentUrl']
+                ?? null;
+
+            if (!$paymentUrl) {
+                throw new \RuntimeException('No payment URL in response: ' . $response);
+            }
+
+            $updatedCustomFields = $orderTransaction->getCustomFields() ?? [];
+            $updatedCustomFields['lodinInvoiceId'] = $invoiceId;
+            $updatedCustomFields['lodinTransactionId'] = $data['transactionId'] ?? null;
+            $updatedCustomFields['lodinCardId'] = $data['cardId'] ?? null;
+
+            $this->orderTransactionRepository->update([
+                [
+                    'id' => $orderTransactionId,
+                    'customFields' => $updatedCustomFields,
+                ],
+            ], $context);
+
+            return new RedirectResponse($paymentUrl);
+        } catch (\Throwable $e) {
+            file_put_contents('/var/www/html/debug.txt', "FATAL: " . $e::class . ' | ' . $e->getMessage() . "\n", FILE_APPEND);
+            throw $e;
         }
-
-        curl_close($ch);
-
-        $response = json_decode($rawResponse, true);
-
-        if (!is_array($response)) {
-            $this->logger->error('Lodin create payment invalid response', [
-                'transactionId' => $orderTransactionId,
-                'httpCode' => $httpCode,
-                'response' => $rawResponse,
-            ]);
-
-            throw new \RuntimeException('Invalid API response from Lodin.');
-        }
-
-        $paymentUrl = (string) (
-            $response['url']
-            ?? $response['paymentUrl']
-            ?? $response['data']['url']
-            ?? $response['data']['paymentUrl']
-            ?? ''
-        );
-
-        if ($paymentUrl === '') {
-            $this->logger->error('Lodin create payment returned no redirect URL', [
-                'transactionId' => $orderTransactionId,
-                'httpCode' => $httpCode,
-                'response' => $response,
-            ]);
-
-            throw new \RuntimeException('No payment URL returned by Lodin.');
-        }
-
-        $updatedCustomFields = $orderTransaction->getCustomFields() ?? [];
-        $updatedCustomFields['lodinInvoiceId'] = $invoiceId;
-        $updatedCustomFields['lodinTransactionId'] = $response['transactionId'] ?? null;
-        $updatedCustomFields['lodinCardId'] = $response['cardId'] ?? null;
-
-        $this->orderTransactionRepository->update([
-            [
-                'id' => $orderTransactionId,
-                'customFields' => $updatedCustomFields,
-            ],
-        ], $context);
-
-        return new RedirectResponse($paymentUrl);
     }
 
     public function supports(

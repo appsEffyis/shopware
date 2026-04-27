@@ -6,64 +6,48 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
-class LodinReturnController extends AbstractController
+class LodinReturnController
 {
     public function __construct(
         private readonly EntityRepository $orderTransactionRepository
-    ) {
-    }
+    ) {}
 
     #[Route(path: '/lodin/return', name: 'frontend.lodin.return', methods: ['GET'])]
-    public function handleReturn(Request $request, Context $context): RedirectResponse
+    public function return(Request $request, Context $context): RedirectResponse
     {
+        $orderId = (string) $request->query->get('orderId', '');
         $transactionId = (string) $request->query->get('transactionId', '');
 
+        if ($orderId === '') {
+            return new RedirectResponse('/checkout/cart');
+        }
+
         if ($transactionId === '') {
-            return new RedirectResponse('/lodin/fail');
+            return new RedirectResponse('/checkout/confirm');
         }
 
-        for ($i = 0; $i < 5; $i++) {
-            $criteria = new Criteria([$transactionId]);
-            $criteria->addAssociation('stateMachineState');
+        $criteria = new Criteria([$transactionId]);
+        $criteria->addAssociation('stateMachineState');
 
-            $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        $transaction = $this->orderTransactionRepository
+            ->search($criteria, $context)
+            ->first();
 
-            if (!$transaction instanceof OrderTransactionEntity) {
-                sleep(1);
-                continue;
-            }
-
-            $stateEntity = $transaction->getStateMachineState();
-
-            if ($stateEntity === null) {
-                sleep(1);
-                continue;
-            }
-
-            $state = $stateEntity->getTechnicalName();
-
-            if (in_array($state, ['paid', 'authorized'], true)) {
-                return new RedirectResponse('/lodin/success');
-            }
-
-            if (in_array($state, ['failed', 'cancelled'], true)) {
-                return new RedirectResponse('/lodin/fail');
-            }
-
-            if (in_array($state, ['open', 'in_progress', 'unconfirmed'], true)) {
-                sleep(1);
-                continue;
-            }
-
-            return new RedirectResponse('/lodin/fail');
+        if (!$transaction instanceof OrderTransactionEntity) {
+            return new RedirectResponse('/checkout/confirm');
         }
 
-        return new RedirectResponse('/lodin/fail');
+        $technicalName = $transaction->getStateMachineState()?->getTechnicalName();
+
+        if (in_array($technicalName, ['paid', 'paid_partially', 'authorized'], true)) {
+            return new RedirectResponse('/checkout/finish?orderId=' . urlencode($orderId));
+        }
+
+        return new RedirectResponse('/checkout/confirm');
     }
 }

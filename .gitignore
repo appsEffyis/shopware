@@ -18,3 +18,12 @@
 /install.lock
 public/asset-manifest.json
 ###< shopware/core ###
+.env
+.env.dev
+var/
+vendor/
+node_modules/
+shopware/
+custom/plugins/DockwareSamplePlugin/
+custom/plugins/SwagPlatformDemoData/
+debug.txt
