@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace LodinPayment\Core\Checkout\Payment;
 
@@ -67,7 +67,7 @@ class LodinPaymentHandler extends AbstractPaymentHandler
             }
 
             $order = $orderTransaction->getOrder();
-
+            
             if ($order === null) {
                 throw new \RuntimeException('Order not found');
             }
