@@ -21,14 +21,7 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
             <argument type="service" id="logger"/>
-            <tag name="controller.service_arguments"/>
-        </service>
-
-        <service id="LodinPayment\Controller\Success" public="true">
-            <tag name="controller.service_arguments"/>
-        </service>
-
-        <service id="LodinPayment\Controller\Fail" public="true">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="controller.service_arguments"/>
         </service>
     </services>
