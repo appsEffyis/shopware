@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 class LodinPaymentHandler extends AbstractPaymentHandler
 {
     private const API_URL = 'https://api-preprod.lodinpay.com/merchant-service/extensions/pay/rtp';
-    private const SHOP_BASE_URL = 'http://localhost:8000';
+    private const SHOP_BASE_URL = 'http://194.163.169.2:4488';
 
     public function __construct(
         private readonly SystemConfigService $systemConfigService,

@@ -1,0 +1,21 @@
+{% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
+
+{% block component_payment_method_label %}
+    {% if payment.translated.name == 'Pay by Bank' %}
+        <div style="display:flex; align-items:center; width:100%; gap:10px;">
+            <img src="/bundles/lodinpayment/logo.png"
+                alt="Lodin"
+                style="height:28px; width:auto; object-fit:contain; flex-shrink:0;">
+
+            <div style="flex:1;">
+                {{ parent() }}
+            </div>
+
+            <img src="/bundles/lodinpayment/banks.png"
+                alt="Banks"
+                style="height:28px; width:auto; flex-shrink:0; margin-left:auto; margin-right:10px;">
+        </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

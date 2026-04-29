@@ -20,7 +20,7 @@
         <input-field type="text">
             <name>shopBaseUrl</name>
             <label>Shop Base URL</label>
-            <placeholder>http://localhost:8000</placeholder>
+            <placeholder>http://194.163.169.2:4488</placeholder>
             <helpText>Used to build the short return URL sent to Lodin.</helpText>
         </input-field>
     </card>

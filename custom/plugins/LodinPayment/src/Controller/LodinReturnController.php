@@ -15,9 +15,15 @@ class LodinReturnController
 {
     public function __construct(
         private readonly EntityRepository $orderTransactionRepository
-    ) {}
+    ) {
+    }
 
-    #[Route(path: '/lodin/return', name: 'frontend.lodin.return', methods: ['GET'])]
+    #[Route(
+        path: '/lodin/return',
+        name: 'frontend.lodin.return',
+        methods: ['GET'],
+        defaults: ['_csrf_protected' => false]
+    )]
     public function return(Request $request, Context $context): RedirectResponse
     {
         $orderId = (string) $request->query->get('orderId', '');
@@ -28,7 +34,9 @@ class LodinReturnController
         }
 
         if ($transactionId === '') {
-            return new RedirectResponse('/checkout/confirm');
+            return new RedirectResponse(
+                '/checkout/finish?orderId=' . urlencode($orderId) . '&paymentFailed=1'
+            );
         }
 
         $criteria = new Criteria([$transactionId]);
@@ -39,15 +47,27 @@ class LodinReturnController
             ->first();
 
         if (!$transaction instanceof OrderTransactionEntity) {
-            return new RedirectResponse('/checkout/confirm');
+            return new RedirectResponse(
+                '/checkout/finish?orderId=' . urlencode($orderId) . '&paymentFailed=1'
+            );
         }
 
         $technicalName = $transaction->getStateMachineState()?->getTechnicalName();
 
         if (in_array($technicalName, ['paid', 'paid_partially', 'authorized'], true)) {
-            return new RedirectResponse('/checkout/finish?orderId=' . urlencode($orderId));
+            return new RedirectResponse(
+                '/checkout/finish?orderId=' . urlencode($orderId)
+            );
         }
 
-        return new RedirectResponse('/checkout/confirm');
+        if (in_array($technicalName, ['failed', 'cancelled', 'canceled'], true)) {
+            return new RedirectResponse(
+                '/checkout/finish?orderId=' . urlencode($orderId) . '&paymentFailed=1'
+            );
+        }
+
+        return new RedirectResponse(
+            '/checkout/finish?orderId=' . urlencode($orderId) . '&paymentFailed=1'
+        );
     }
 }

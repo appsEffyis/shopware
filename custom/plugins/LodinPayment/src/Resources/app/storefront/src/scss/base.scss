@@ -1,0 +1,22 @@
+.lodin-payment-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.lodin-logo {
+    width: 26px;
+    height: auto;
+}
+
+.lodin-banks {
+    height: 18px;
+    width: auto;
+    margin-left: auto;
+}
+
+.lodin-logo,
+.lodin-banks {
+    display: none;
+}
