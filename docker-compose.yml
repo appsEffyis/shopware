@@ -5,18 +5,14 @@ services:
     image: dockware/dev:latest
     container_name: shopware
     ports:
-      - "8000:80"
-      - "22:22"
+      - "4488:80"
     environment:
-      XDEBUG_ENABLED: 1
-      LODIN_CLIENT_ID: "lp_shopware_318bccb7-9e84-4327-93d9-c59a64cc3154"
-      LODIN_CLIENT_SECRET: "68NXPvOG9Qn5sq8GAITJhkcSh2frZtsxDokECO_has4"
+      XDEBUG_ENABLED: 0
     volumes:
-      - .:/var/www/html
+      - shopware_data:/var/www/html
+      - ./custom/plugins/LodinPayment:/var/www/html/custom/plugins/LodinPayment
     depends_on:
       - mysql
-    stdin_open: true
-    tty: true
 
   mysql:
     image: mysql:8
@@ -26,10 +22,9 @@ services:
       MYSQL_DATABASE: shopware
       MYSQL_USER: shopware
       MYSQL_PASSWORD: shopware
-    ports:
-      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
 volumes:
+  shopware_data:
   mysql_data:
