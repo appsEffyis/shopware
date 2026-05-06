@@ -16,12 +16,5 @@
             <label>Client Secret</label>
             <placeholder>Enter your Lodin client secret</placeholder>
         </input-field>
-
-        <input-field type="text">
-            <name>shopBaseUrl</name>
-            <label>Shop Base URL</label>
-            <placeholder>http://194.163.169.2:4488</placeholder>
-            <helpText>Used to build the short return URL sent to Lodin.</helpText>
-        </input-field>
     </card>
 </config>
